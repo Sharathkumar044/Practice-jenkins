@@ -1,0 +1,27 @@
+# Use an official Maven image as the build environment
+FROM maven:3.8.4-openjdk-17 AS builder
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the project's POM file and download dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# Copy the project source code
+COPY src ./src
+
+# Build the application
+RUN mvn clean install -DskipTests
+
+# Use a lightweight Java image as the final image
+FROM openjdk:17-slim
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the JAR file from the builder stage
+COPY --from=builder /app/target/your-java-app.jar .
+
+# Specify the command to run your application
+CMD ["java", "-jar", "your-java-app.jar"]
