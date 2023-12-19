@@ -13,7 +13,6 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Assuming Maven is available in the PATH or you've configured the tool installation in Jenkins
                     sh 'mvn clean package'
                 }
             }
@@ -23,9 +22,6 @@ pipeline {
 
     }
 
-    post {
-        always {
-            // Cleanup or additional actions after the pipeline completes
-        }
-    }
+    // No post block
+
 }
