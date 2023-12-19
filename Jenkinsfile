@@ -13,7 +13,12 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh 'mvn clean package'
+                    try {
+                        sh 'mvn clean package'
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error("Build failed: ${e.message}")
+                    }
                 }
             }
         }
@@ -21,8 +26,13 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    withSonarQubeEnv('SonarQube') {
-                        sh 'mvn sonar:sonar'
+                    try {
+                        withSonarQubeEnv('SonarQube') {
+                            sh 'mvn sonar:sonar'
+                        }
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error("SonarQube analysis failed: ${e.message}")
                     }
                 }
             }
@@ -30,5 +40,15 @@ pipeline {
 
         // Add more stages as needed for deployment, testing, etc.
 
+    }
+
+    post {
+        always {
+            emailext (
+                subject: "Pipeline Result: \${currentBuild.fullDisplayName}",
+                body: "The pipeline \${currentBuild.fullDisplayName} has finished. Result: \${currentBuild.result}",
+                to: "jagarapumutyalun@example.com",
+            )
+        }
     }
 }
