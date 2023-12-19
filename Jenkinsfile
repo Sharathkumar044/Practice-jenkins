@@ -33,23 +33,32 @@ pipeline {
         success {
             script {
                 echo 'Build successful! Sending success notification...'
-                emailext (
-                    subject: "Pipeline Successful: \${currentBuild.fullDisplayName}",
-                    body: "The pipeline \${currentBuild.fullDisplayName} has completed successfully. No issues found.",
-                    to: "jagarapumutyalun@gmail.com",
-                    attachLog: true,
-                )
+                try {
+                    emailext (
+                        subject: "Pipeline Successful: \${currentBuild.fullDisplayName}",
+                        body: "The pipeline \${currentBuild.fullDisplayName} has completed successfully. No issues found.",
+                        to: "jagarapumutyalun@gmail.com",
+                        attachLog: true,
+                    )
+                } catch (Exception e) {
+                    echo "Error sending success email: ${e.message}"
+                }
             }
         }
+
         failure {
             script {
                 echo 'Build failed! Sending failure notification...'
-                emailext (
-                    subject: "Pipeline Failed: \${currentBuild.fullDisplayName}",
-                    body: "The pipeline \${currentBuild.fullDisplayName} has failed. Please investigate and take necessary actions.",
-                    to: "jagarapumutyalun@gmail.com",
-                    attachLog: true,
-                )
+                try {
+                    emailext (
+                        subject: "Pipeline Failed: \${currentBuild.fullDisplayName}",
+                        body: "The pipeline \${currentBuild.fullDisplayName} has failed. Please investigate and take necessary actions.",
+                        to: "jagarapumutyalun@gmail.com",
+                        attachLog: true,
+                    )
+                } catch (Exception e) {
+                    echo "Error sending failure email: ${e.message}"
+                }
             }
         }
     }
