@@ -3,13 +3,11 @@ pipeline {
 
     environment {
         MAVEN_HOME = '/usr/share/maven'
-        SONARQUBE_HOME = '/path/to/sonarqube' // Provide the path to your SonarQube Scanner installation
+        SONARQUBE_HOME = '/path/to/sonarqube'
     }
 
     tools {
         maven 'Maven'
-        // Add SonarQube Scanner installation as a tool
-        // Install SonarQube Scanner tool in Jenkins and reference it here
         sonarqube 'SonarQubeScanner'
     }
 
@@ -22,7 +20,13 @@ pipeline {
 
         stage('Build with Maven') {
             steps {
-                sh "${MAVEN_HOME}/bin/mvn clean install"
+                script {
+                    def mavenHome = tool 'Maven'
+                    def mavenSettings = findFiles(glob: '**/settings.xml')[0]
+                    withMaven(maven: mavenHome, mavenSettingsConfig: 'your-settings-config-id') {
+                        sh "mvn clean install"
+                    }
+                }
             }
         }
 
@@ -30,7 +34,7 @@ pipeline {
             steps {
                 script {
                     def scannerHome = tool 'SonarQubeScanner'
-                    withSonarQubeEnv('SonarQube') {
+                    withSonarQubeEnv('YourSonarQubeServer') {
                         sh "${scannerHome}/bin/sonar-scanner"
                     }
                 }
