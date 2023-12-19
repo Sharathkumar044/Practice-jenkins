@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         MAVEN_HOME = '/usr/share/maven'
-        DOCKER_IMAGE = 'Sample_Web_Application'
+        // DOCKER_IMAGE = 'Sample_Web_Application'
     }
 
     tools {
@@ -31,34 +31,34 @@ pipeline {
             }
         }
 
-        stage('Run Docker Container') {
-            steps {
-                script {
-                    sh "docker run -p 8080:8080 --name your-java-container ${DOCKER_IMAGE}"
-                }
-            }
-        }
+//         stage('Run Docker Container') {
+//             steps {
+//                 script {
+//                     sh "docker run -p 8080:8080 --name your-java-container ${DOCKER_IMAGE}"
+//                 }
+//             }
+//         }
 
-        stage('Deploy') {
-            steps {
-                sh "${MAVEN_HOME}/bin/mvn tomcat7:redeploy"
-            }
-        }
-    }
+//         stage('Deploy') {
+//             steps {
+//                 sh "${MAVEN_HOME}/bin/mvn tomcat7:redeploy"
+//             }
+//         }
+//     }
 
-    post {
-        success {
-            script {
-                echo 'Build, Docker build, and deployment successful!'
-            }
-        }
-        failure {
-            script {
-                echo 'Build, Docker build, or deployment failed!'
-            }
-        }
-        always {
-            // Post actions that should run regardless of success or failure
-        }
-    }
-}
+//     post {
+//         success {
+//             script {
+//                 echo 'Build, Docker build, and deployment successful!'
+//             }
+//         }
+//         failure {
+//             script {
+//                 echo 'Build, Docker build, or deployment failed!'
+//             }
+//         }
+//         always {
+//             // Post actions that should run regardless of success or failure
+//         }
+//     }
+// }
