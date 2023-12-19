@@ -18,10 +18,23 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    withSonarQubeEnv('SonarQube') {
+                        sh 'mvn sonar:sonar'
+                    }
+                }
+            }
+        }
+
         // Add more stages as needed for deployment, testing, etc.
 
     }
 
-    // No post block
-
+    post {
+        always {
+            // Cleanup or additional actions after the pipeline completes
+        }
+    }
 }
