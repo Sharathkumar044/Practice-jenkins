@@ -13,12 +13,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    try {
-                        sh 'mvn clean package'
-                    } catch (Exception e) {
-                        currentBuild.result = 'FAILURE'
-                        error("Build failed: ${e.message}")
-                    }
+                    sh 'mvn clean package'
                 }
             }
         }
@@ -26,29 +21,36 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    try {
-                        withSonarQubeEnv('SonarQube') {
-                            sh 'mvn sonar:sonar'
-                        }
-                    } catch (Exception e) {
-                        currentBuild.result = 'FAILURE'
-                        error("SonarQube analysis failed: ${e.message}")
+                    withSonarQubeEnv('SonarQube') {
+                        sh 'mvn sonar:sonar'
                     }
                 }
             }
         }
-
-        // Add more stages as needed for deployment, testing, etc.
-
     }
 
     post {
-        always {
-            emailext (
-                subject: "Pipeline Result: \${currentBuild.fullDisplayName}",
-                body: "The pipeline \${currentBuild.fullDisplayName} has finished. Result: \${currentBuild.result}",
-                to: "jagarapumutyalun@example.com",
-            )
+        success {
+            script {
+                echo 'Build successful! Sending success notification...'
+                emailext (
+                    subject: "Pipeline Successful: \${currentBuild.fullDisplayName}",
+                    body: "The pipeline \${currentBuild.fullDisplayName} has completed successfully. No issues found.",
+                    to: "jagarapumutyalun@gmail.com",
+                    attachLog: true,
+                )
+            }
+        }
+        failure {
+            script {
+                echo 'Build failed! Sending failure notification...'
+                emailext (
+                    subject: "Pipeline Failed: \${currentBuild.fullDisplayName}",
+                    body: "The pipeline \${currentBuild.fullDisplayName} has failed. Please investigate and take necessary actions.",
+                    to: "jagarapumutyalun@gmail.com",
+                    attachLog: true,
+                )
+            }
         }
     }
 }
