@@ -3,11 +3,14 @@ pipeline {
 
     environment {
         MAVEN_HOME = '/usr/share/maven'
-        // DOCKER_IMAGE = 'Sample_Web_Application'
+        SONARQUBE_HOME = '/path/to/sonarqube' // Provide the path to your SonarQube Scanner installation
     }
 
     tools {
         maven 'Maven'
+        // Add SonarQube Scanner installation as a tool
+        // Install SonarQube Scanner tool in Jenkins and reference it here
+        sonarqube 'SonarQubeScanner'
     }
 
     stages {
@@ -23,42 +26,21 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('SonarQube Analysis') {
             steps {
                 script {
-                    sh "docker build -t ${DOCKER_IMAGE} ."
+                    def scannerHome = tool 'SonarQubeScanner'
+                    withSonarQubeEnv('SonarQube') {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
                 }
             }
         }
+    }
 
-//         stage('Run Docker Container') {
-//             steps {
-//                 script {
-//                     sh "docker run -p 8080:8080 --name your-java-container ${DOCKER_IMAGE}"
-//                 }
-//             }
-//         }
-
-//         stage('Deploy') {
-//             steps {
-//                 sh "${MAVEN_HOME}/bin/mvn tomcat7:redeploy"
-//             }
-//         }
-//     }
-
-//     post {
-//         success {
-//             script {
-//                 echo 'Build, Docker build, and deployment successful!'
-//             }
-//         }
-//         failure {
-//             script {
-//                 echo 'Build, Docker build, or deployment failed!'
-//             }
-//         }
-//         always {
-//             // Post actions that should run regardless of success or failure
-//         }
-//     }
-// }
+    post {
+        always {
+            // Cleanup or additional steps to be executed after all stages
+        }
+    }
+}
