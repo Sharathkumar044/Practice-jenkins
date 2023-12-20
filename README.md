@@ -11,3 +11,5 @@
 #chown -R sonaradmin:sonaradmin sonarqube
 #start the application ===== ./sonar.sh start
 #localIP:9000
+
+sonarui ===== admin ==== pw==== sonaradmin ========
